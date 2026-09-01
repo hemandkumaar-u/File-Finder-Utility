@@ -48,9 +48,12 @@ class DocxParser:
                 cleaned = prefix_match.group(1).strip()
 
             # Skip long narrative prose sentences (e.g. > 70 chars with spaces) unless it has a file extension
+            # or it looks like a comma-separated list of IDs.
             has_extension = bool(re.search(r'\.(?:jpg|jpeg|png|gif|bmp|webp|tiff|svg|ico|heic)\b', cleaned, re.IGNORECASE))
             if len(cleaned) > 70 and not has_extension:
-                return
+                # Check if it might be a comma-separated list of items
+                if cleaned.count(',') < 3 and not re.search(r'\b(?:id|img|image|pic|logo|banner)s?\b', cleaned, re.IGNORECASE):
+                    return
 
             # Split line into tokens if multiple comma/semicolon/newline separated names exist on one line
             lines_or_tokens = [cleaned]

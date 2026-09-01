@@ -42,6 +42,7 @@ class ImageMatcherApp:
         self.image_only_var = tk.BooleanVar(value=True)
         self.overwrite_var = tk.BooleanVar(value=False)
         self.move_files_var = tk.BooleanVar(value=False)
+        self.split_tokens_var = tk.BooleanVar(value=True)
 
         self.matched_items: List[Dict[str, Any]] = []
         self.missing_items: List[Dict[str, Any]] = []
@@ -115,6 +116,8 @@ class ImageMatcherApp:
         ttk.Checkbutton(opt_grid, text="Image Files Only", variable=self.image_only_var).grid(row=1, column=0, sticky=tk.W, padx=10, pady=2)
         ttk.Checkbutton(opt_grid, text="Overwrite Existing Destination Files", variable=self.overwrite_var).grid(row=1, column=1, sticky=tk.W, padx=10, pady=2)
         ttk.Checkbutton(opt_grid, text="Move Files (instead of Copying)", variable=self.move_files_var).grid(row=1, column=2, sticky=tk.W, padx=10, pady=2)
+
+        ttk.Checkbutton(opt_grid, text="Split Comma-Separated IDs", variable=self.split_tokens_var).grid(row=2, column=0, sticky=tk.W, padx=10, pady=2)
 
         # Action Buttons Row
         actions_frame = ttk.Frame(main_container)
@@ -264,7 +267,7 @@ class ImageMatcherApp:
     def _run_search(self, docx_path: str, source_dir: str):
         try:
             # 1. Parse docx
-            extracted = DocxParser.extract_items(docx_path)
+            extracted = DocxParser.extract_items(docx_path, extract_tokens_per_line=self.split_tokens_var.get())
             self.log(f"Extracted {len(extracted)} candidate IDs/names from Word document.")
 
             if not extracted:
